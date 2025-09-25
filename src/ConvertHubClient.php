@@ -332,6 +332,18 @@ class ConvertHubClient
     }
 
     /**
+     * Get account details including membership, credits, and file size limits
+     *
+     * @return array Account information with credits and plan details
+     * @throws ApiException
+     * @throws AuthenticationException
+     */
+    public function getAccount(): array
+    {
+        return $this->request('GET', 'account');
+    }
+
+    /**
      * Get health status of the API
      *
      * @return array Health status data

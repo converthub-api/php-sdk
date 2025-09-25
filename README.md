@@ -58,6 +58,7 @@ if ($completedJob->isCompleted()) {
 ## Table of Contents
 
 - [Authentication](#authentication)
+- [Account Management](#account-management)
 - [Basic Usage](#basic-usage)
   - [Convert a File](#convert-a-file)
   - [Convert from URL](#convert-from-url)
@@ -90,6 +91,46 @@ $client = new ConvertHubClient('YOUR_API_KEY', [
     'retry_enabled' => true,                     // Enable automatic retries
     'max_retries' => 3,                         // Maximum retry attempts
 ]);
+```
+
+## Account Management
+
+### Get Account Information
+
+Retrieve your account details including credits remaining, membership plan, and file size limits:
+
+```php
+$accountInfo = $client->getAccount();
+
+echo "Credits Remaining: " . $accountInfo['credits_remaining'] . "\n";
+echo "Plan: " . $accountInfo['plan']['name'] . "\n";
+echo "Total Credits: " . $accountInfo['plan']['credits'] . "\n";
+echo "File Size Limit: " . $accountInfo['plan']['file_size_limit_mb'] . " MB\n";
+
+// Check if running low on credits
+if ($accountInfo['credits_remaining'] < 10) {
+    echo "Warning: Running low on credits!\n";
+}
+```
+
+### Monitor Usage
+
+```php
+// Calculate usage percentage
+$account = $client->getAccount();
+$usedCredits = $account['plan']['credits'] - $account['credits_remaining'];
+$usagePercent = round(($usedCredits / $account['plan']['credits']) * 100, 1);
+
+echo "Credits Used: {$usedCredits}/{$account['plan']['credits']} ({$usagePercent}%)\n";
+
+// Check file size before conversion
+$filePath = 'large-file.pdf';
+$fileSize = filesize($filePath);
+
+if ($fileSize > $account['plan']['file_size_limit']) {
+    echo "File too large for your plan. Max size: " . $account['plan']['file_size_limit_mb'] . " MB\n";
+    echo "Please upgrade your plan to convert larger files.\n";
+}
 ```
 
 ## Basic Usage
